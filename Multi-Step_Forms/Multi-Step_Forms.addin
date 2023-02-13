@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Command">
+    <Text>Command Multi-Step_Forms</Text>
+    <Description>Some description for Multi-Step_Forms</Description>
+    <Assembly>Multi-Step_Forms.dll</Assembly>
+    <FullClassName>Multi_Step_Forms.Command</FullClassName>
+    <ClientId>8aa5197a-fc04-4fcb-bcf3-e0c6df88912a</ClientId>
+    <VendorId>com.YOUR COMPANY NAME</VendorId>
+    <VendorDescription>YOUR COMPANY NAME, YOUR COMPANY URL</VendorDescription>
+  </AddIn>
+  <AddIn Type="Application">
+    <Name>Application Multi-Step_Forms</Name>
+    <Assembly>Multi-Step_Forms.dll</Assembly>
+    <FullClassName>Multi_Step_Forms.App</FullClassName>
+    <ClientId>f2587b80-d812-4132-803c-628bd37a141f</ClientId>
+    <VendorId>com.YOUR COMPANY NAME</VendorId>
+    <VendorDescription>YOUR COMPANY NAME, YOUR COMPANY URL</VendorDescription>
+  </AddIn>
+</RevitAddIns>
