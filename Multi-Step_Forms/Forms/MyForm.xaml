@@ -20,12 +20,12 @@
                 <Label Content="Click 'Select' Then Pick Views to Renumber in Order:"/>
             </StackPanel>
             <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
-                <ListBox x:Name="lbxElemIds" Width="600" Height="150"/>
+                <ListBox x:Name="lbxElemIds" Width="600" Height="150" SelectionMode="Multiple"/>
                 <Button x:Name="btnSelect" Content="Select.." Width="100" Height="30" VerticalAlignment="Top" Margin="15,0,0,0" Click="btnSelect_Click"/>
             </StackPanel>
             <StackPanel Grid.Row="2" Orientation="Vertical">
-                <Label Content="Select Start Number"/>
-                <ComboBox x:Name="cmbViewsList" Width="600" HorizontalAlignment="Left"/>
+                <Label x:Name="lblSelected" Content="Select Start Number"/>
+                <ComboBox x:Name="cmbViewsList" Width="600" HorizontalAlignment="Left" SelectionChanged="cmbViewsList_SelectionChanged"/>
             </StackPanel>
             <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button x:Name="btnOK" Content="OK" Width="100" Height="30" VerticalAlignment="Top" Click="btnOK_Click"/>

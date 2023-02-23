@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-
+//using System.Windows;
 #endregion
 
 namespace Multi_Step_Forms
@@ -29,7 +29,7 @@ namespace Multi_Step_Forms
             // put any code needed for the form here
 
             // open form
-            MyForm currentForm = new MyForm()
+            MyForm currentForm = new MyForm("", doc, null)
             {
                 Width = 750,
                 Height = 450,
@@ -40,6 +40,58 @@ namespace Multi_Step_Forms
             currentForm.ShowDialog();
 
             // get form data and do something
+            //List<Reference> refList = new List<Reference>();
+            List<string> refList = new List<string>();
+            bool flag = true;
+
+            while (flag == true)
+            {
+                // while loop will continue as long as the user continues selecting elements and does not hit the escape key
+                try
+                {
+                    // Ask the user to select elements
+                    Reference curRef = uidoc.Selection.PickObject(ObjectType.Element, "Pick an item");
+                    
+                    // filter out anything that is not a viewport selection
+                    Element element = doc.GetElement(curRef);
+                    if (element.Category != null && element.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Viewports)
+                    {
+                        // if element is a viewport, add it to refList
+                        refList.Add(curRef.ElementId.ToString());
+                    }
+
+                    
+                }
+                catch (Exception)
+                {
+                    // if the user hit escape, set the flag to false to exit the selection loop
+                    flag = false;
+                }
+            }
+
+            string returnString = "There are " + refList.Count.ToString() + " selected elements";
+            List<string> returnStrings = currentForm.GetSelectedListboxItems();
+
+            //MyForm currentForm2 = new MyForm(returnString, doc, returnStrings)
+            MyForm currentForm2 = new MyForm(returnString, doc, refList)
+            {
+                Width = 750,
+                Height = 450,
+                WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen,
+                Topmost = true,
+            };
+
+            currentForm2.ShowDialog();
+
+            // What to do if user clicked Ok.
+            if (currentForm2.DialogResult == true)
+            {
+                string returnString2 = currentForm2.GetSelectedComboboxItem();
+                List<string> returnStrings2 = currentForm2.GetSelectedListboxItems();
+            }
+            
+
+            //System.Threading.Thread.Sleep(1000);
 
             return Result.Succeeded;
         }
