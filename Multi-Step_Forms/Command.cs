@@ -29,7 +29,7 @@ namespace Multi_Step_Forms
             // put any code needed for the form here
 
             // open form
-            MyForm currentForm = new MyForm("", doc, null)
+            MyForm currentForm = new MyForm(doc, null)
             {
                 Width = 750,
                 Height = 450,
@@ -41,7 +41,7 @@ namespace Multi_Step_Forms
 
             // get form data and do something
             //List<Reference> refList = new List<Reference>();
-            List<string> refList = new List<string>();
+            List<Reference> refList = new List<Reference>();
             bool flag = true;
 
             while (flag == true)
@@ -50,14 +50,14 @@ namespace Multi_Step_Forms
                 try
                 {
                     // Ask the user to select elements
-                    Reference curRef = uidoc.Selection.PickObject(ObjectType.Element, "Pick an item");
+                    Reference curRef = uidoc.Selection.PickObject(ObjectType.Element, "Pick the viewports you want to renumber, then hit ESC.");
                     
                     // filter out anything that is not a viewport selection
                     Element element = doc.GetElement(curRef);
                     if (element.Category != null && element.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Viewports)
                     {
                         // if element is a viewport, add it to refList
-                        refList.Add(curRef.ElementId.ToString());
+                        refList.Add(curRef);
                     }
 
                     
@@ -69,11 +69,11 @@ namespace Multi_Step_Forms
                 }
             }
 
-            string returnString = "There are " + refList.Count.ToString() + " selected elements";
-            List<string> returnStrings = currentForm.GetSelectedListboxItems();
+            //string returnString = "There are " + refList.Count.ToString() + " selected elements";
+            //List<Element> selectedListBoxItems = currentForm.GetSelectedListboxItems();
 
             //MyForm currentForm2 = new MyForm(returnString, doc, returnStrings)
-            MyForm currentForm2 = new MyForm(returnString, doc, refList)
+            MyForm currentForm2 = new MyForm(doc, refList)
             {
                 Width = 750,
                 Height = 450,
@@ -86,8 +86,35 @@ namespace Multi_Step_Forms
             // What to do if user clicked Ok.
             if (currentForm2.DialogResult == true)
             {
-                string returnString2 = currentForm2.GetSelectedComboboxItem();
-                List<string> returnStrings2 = currentForm2.GetSelectedListboxItems();
+                int startNumber = currentForm2.GetSelectedComboboxItem();
+                int tempNum = startNumber;
+                int counter = 0;
+                List<Element> returnElements = currentForm2.GetSelectedListboxItems();
+                using (Transaction t = new Transaction(doc))
+                {
+                    t.Start("Renumber Viewports");
+
+                    foreach (Element curElem in returnElements)
+                    {
+                        Parameter curParam = curElem.get_Parameter(BuiltInParameter.VIEWPORT_DETAIL_NUMBER);
+                        curParam.Set("zzzzz" + tempNum.ToString());
+                        tempNum++;
+                    }
+
+                    tempNum = startNumber;
+
+                    foreach (Element curElem2 in returnElements)
+                    {
+                        Parameter curParam = curElem2.get_Parameter(BuiltInParameter.VIEWPORT_DETAIL_NUMBER);
+                        curParam.Set(tempNum.ToString());
+
+                        tempNum++;
+                        counter++;
+                    }
+
+                    t.Commit();
+                }
+
             }
             
 

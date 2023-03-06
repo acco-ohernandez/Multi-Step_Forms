@@ -23,25 +23,48 @@ namespace Multi_Step_Forms
     public partial class MyForm : Window
     {
         public Document myDoc;
-        public MyForm(string testText, Document doc, List<string> listBoxItems)
+        public List<Element> elemList;
+        public MyForm(Document doc, List<Reference> listBoxItems)
         {
             InitializeComponent();
             myDoc = doc;
             lbxElemIds.Items.Clear();
             cmbViewsList.Items.Clear();
 
-            if (testText == "" && listBoxItems == null)
+            if (listBoxItems == null)
                 PopulateControls();
             else
             {
                 //lblLabel.Content = testText + doc.PathName;
+                lbxElemIds.Items.Clear();
+                elemList = new List<Element>();
 
-                foreach (string item in listBoxItems)
+                foreach (Reference curRef in listBoxItems)
                 {
                     //lbxElemIds.Items.Add(item);
-                    lbxElemIds.Items.Add(item);
-                    cmbViewsList.Items.Add(item);
+
+                    Element curElem = doc.GetElement(curRef);
+
+                    if (curElem is Viewport)
+                    {
+                        elemList.Add(curElem);
+                        //Viewport curVP = curElem as Viewport;
+                        //View curView = doc.GetElement(curVP.ViewId) as View;
+
+                        Parameter curParam = curElem.get_Parameter(BuiltInParameter.VIEWPORT_VIEW_NAME);
+                        Parameter curParam2 = curElem.get_Parameter(BuiltInParameter.VIEWPORT_DETAIL_NUMBER);
+
+                        lbxElemIds.Items.Add(curParam2.AsString() + ": " + curParam.AsString() + " (" + curElem.Id.ToString() + ")");
+                        //lbxElements.Items.Add(curElem.Id.ToString());
+                    }
                 }
+
+                // add 1..20 to the cmbViowsList
+                for (int i = 1; i <=20 ; i++)
+                {
+                    cmbViewsList.Items.Add(i);
+                }
+
 
                 //cmbViewsList.Items.Add(testText);
             }
@@ -51,16 +74,7 @@ namespace Multi_Step_Forms
 
         public void PopulateControls()
         {
-            FilteredElementCollector collector = new FilteredElementCollector(myDoc);
-            collector.OfCategory(BuiltInCategory.OST_Views);
-            collector.WhereElementIsNotElementType();
-
-            foreach (View currentView in collector)
-            {
-                lbxElemIds.Items.Add(currentView.Name);
-                
-            }
-
+            lbxElemIds.Items.Add("Click Select to pic your viewports");
         }
 
         private void btnSelect_Click(object sender, RoutedEventArgs e)
@@ -82,27 +96,29 @@ namespace Multi_Step_Forms
             this.Close();
         }
 
-        internal List<string> GetSelectedListboxItems()
+        internal List<Element> GetSelectedListboxItems()
         {
-            List<string> returnList = new List<string>();
-
-            foreach (var item in lbxElemIds.SelectedItems)
-            {
-                returnList.Add(item.ToString());
-            }
-
-            return returnList;
+            if (elemList != null)
+                return elemList;
+            else
+                return null;
         }
 
-        internal string GetSelectedComboboxItem()
+        internal int GetSelectedComboboxItem()
         {
-            return cmbViewsList.SelectedItem.ToString();
+            string cmbViewsListNumber =  cmbViewsList.SelectedItem.ToString();
+            int selectedNumber = Convert.ToInt32(cmbViewsListNumber);
+            return selectedNumber;
+
         }
 
         private void cmbViewsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string startItem = cmbViewsList.SelectedItem.ToString();
-            lblSelected.Content = "Reorder will start with: " + startItem;
+            if (cmbViewsList.SelectedItem != null)
+            {
+                string startItem = cmbViewsList.SelectedItem.ToString();
+                lblSelected.Content = "Reorder will start with: " + startItem; 
+            }
         }
     }
 }
